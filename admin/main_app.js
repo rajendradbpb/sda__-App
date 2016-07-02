@@ -5,14 +5,33 @@ app.config(function($stateProvider, $urlRouterProvider) {
   // HOME STATES AND NESTED VIEWS ========================================
     .state('dashboard', {
       templateUrl: 'pages/dashboard.html',
-      url: '/dashboard'
+      url: '/dashboard',
+      onEnter:function($localStorage,$state){
+        if(!localStorage.getItem('accessToken')){
+          $state.go('login');
+        }
+      }
     })
     .state('login', {
       templateUrl: 'pages/login.html',
-      url: '/login'
+      url: '/login',
+      onEnter:function($localStorage,$state){
+        if(localStorage.getItem('accessToken')){
+          $state.go('dashboard');
+        }
+      }
     })
     .state('register', {
       templateUrl: 'pages/register.html',
       url: '/register'
+    })
+    .state('buildingPlan', {
+      templateUrl: 'pages/buildingPlan.html',
+      url: '/buildingPlan',
+      onEnter:function($localStorage,$state){
+        if(!localStorage.getItem('accessToken')){
+          $state.go('login');
+        }
+      }
     })
   });
