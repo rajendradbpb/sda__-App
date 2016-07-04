@@ -7,7 +7,6 @@ app.controller("Main_Controller",function($scope,$state,$localStorage){
       $scope.is_loggedin = false;
     }
   }
-
   /*
   * function : signIn
   */
