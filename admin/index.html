@@ -31,14 +31,19 @@
   <!-- bootstrap wysihtml5 - text editor -->
   <link rel="stylesheet" href="plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
 
+  <link rel="stylesheet" href="dist/js/date-picker/angular-datepicker.min.css">
+
   <script src="dist/js/angular/angular.js"></script>
   <script src="dist/js/angular/angular-ui-router.js"></script>
   <script src="dist/js/angular/angular-resource.js"></script>
   <script src="dist/js/angular/ng-animate.js"></script>
   <script src="dist/js/angular/ui-bootstrap-tpls-0.14.3.min.js"></script>
   <script src="dist/js/angular/ngStorage.min.js"></script>
+  <script src="dist/js/date-picker/angular-datepicker.min.js"></script>
   <script src="main_app.js"></script>
   <script src="controller/main_controller.js"></script>
+  <script src="services/service.js"></script>
+  <script src="directive/directive.js"></script>
 
 </head>
 <body class="hold-transition skin-blue sidebar-mini" ng-class="{'login-page':!is_loggedin}" ng-controller="Main_Controller" ng-init="getUseDetails()">

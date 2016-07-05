@@ -1,0 +1,60 @@
+<section class="content-header">
+  <h1 class="">
+    Users list
+    <small>mangage users</small>
+  </h1>
+  <button class="btn btn-primary pull-right" ui-sref="adduser"><i class="fa fa-plus"></i> Add Users</button>
+</section>
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Manage Users</h3>
+        </div>
+        <div class="box-body">
+          <table id="example2" class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Status</th>
+                <th>Options</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Santosh</td>
+                <td>Majhi</td>
+                <td>santoshmajhi99@gmail.com</td>
+                <td>9438753143</td>
+                <td><span class="label label-success">Active</span></td>
+                <td>
+                  <a href="" class="option-btn" ng-click="goToEdit()"><i class="fa fa-pencil-square-o"></i></a>
+                  <a href="" class="option-btn"><i class="fa fa-trash"></i></a>
+                  <a href="" class="option-btn"><span class="label label-danger">Deactivate</span></a>
+                </td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Santosh</td>
+                <td>Majhi</td>
+                <td>santoshmajhi99@gmail.com</td>
+                <td>9438753143</td>
+                <td><span class="label label-danger">Inactive</span></td>
+                <td>
+                  <a href="" class="option-btn" ng-click="goToEdit()"><i class="fa fa-pencil-square-o"></i></a>
+                  <a href="" class="option-btn"><i class="fa fa-trash"></i></a>
+                  <a href="" class="option-btn"><span class="label label-success">Activate</span></a>
+                </td>
+              </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
