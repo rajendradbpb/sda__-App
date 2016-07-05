@@ -130,6 +130,7 @@ header('Access-Control-Allow-Origin: *');
                     if(mysql_errno($this->db) != 0){
                         throw new Exception("Error   :".mysql_errno($this->db)."   :  ".mysql_error($this->db));
                     }
+
                 }
                 catch(Exception $e){
                     $response = array();
@@ -155,13 +156,13 @@ header('Access-Control-Allow-Origin: *');
                     $this->response($this->json($response), 200);
                 }
             }
-						public function sendResponse($statusCode,$status,$message,$data)
+						public function sendResponse($statusCode,$status,$message = null ,$data = null)
 		        {
 							$response = array();
 							$response['statusCode'] = $statusCode;
 							$response['status'] = $status;
-							$response['message'] = $message;
-							$response['data'] = $data;
+							$response['message'] = $message || null;
+							$response['data'] = $data || null;
 							$this->response($this->json($response), 200);
 		        }
             public function clearArray($arr){
@@ -187,15 +188,15 @@ header('Access-Control-Allow-Origin: *');
         }
 				public function login()
         {
-					echo "string";
+					
 					if(!isset($this->_request['user_name']) || !isset($this->_request['password']))
 						$this->sendResponse(202,"failed","validation Error","Invalid user name or password");
 					$user_name = $this->_request['user_name'];
 					$password = md5($this->_request['password']);
-					$sql = "select count(*) as count from ".self::usersTable." where user_name = '$user_name' and password = '$password' limit 1";
+					$sql = "select * from ".self::usersTable." where user_name = '$user_name' and password = '$password' limit 1";
 					// echo $sql;
 					$rows = $this->executeGenericDQLQuery($sql);
-					if(intval($rows[0]['count']))
+					if(sizeof($rows))
 						$this->sendResponse(200,"success","ok");
 					else {
 							$this->sendResponse(200,"failure","fail");
