@@ -184,6 +184,22 @@ header('Access-Control-Allow-Origin: *');
 	    			}
     				$this->sendResponse(200,"success","",$users);
         }
+				public function getUserById(){
+        	  $sql = "SELECT * FROM ".self::usersTable;
+        	  $sql .= " where id=".$this->_request['id'];
+       			$rows = $this->executeGenericDQLQuery($sql);
+						$user = array();
+    				$user['id'] = $rows[0]['id'];
+    				$user['user_type'] = $rows[0]['user_type'];
+    				$user['user_name'] = $rows[0]['user_name'];
+    				$user['mobile'] = $rows[0]['mobile'];
+    				$user['email'] = $rows[0]['email'];
+    				$user['first_name'] = $rows[0]['first_name'];
+    				$user['last_name'] = $rows[0]['last_name'];
+    				$user['token'] = $rows[0]['token'];
+    				$user['status'] = $rows[0]['status'];
+  					$this->sendResponse(200,"success","",$user);
+        }
 				public function register(){
 					$user_data = $this->_request['user_data'];
 					$user_name = $user_data['user_name'];
