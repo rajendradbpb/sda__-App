@@ -12,7 +12,7 @@ app.controller("Main_Controller",function($scope,$state,$localStorage,userServic
   */
   $scope.signIn = function(user){
     userService.login(user).then(function(pRes) {
-      if(pRes.statusCode == 200){
+      if(pRes.status == 200){
         $scope.is_loggedin = true;
         localStorage.setItem('accessToken','123456');
         $state.go("dashboard");
@@ -33,7 +33,7 @@ app.controller("Main_Controller",function($scope,$state,$localStorage,userServic
 app.controller("userController",function($scope,$state,$localStorage,userService){
   $scope.getUserList = function(){
     userService.getUserList().then(function(pRes) {
-      if(pRes.statusCode == 200){
+      if(pRes.status == 200){
         console.log(pRes.data);
       }
     },
