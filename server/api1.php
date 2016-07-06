@@ -61,23 +61,19 @@ header('Access-Control-Allow-Origin: *');
 				echo "invalid function";
 		}
 		public function json($data){
-                if(is_array($data))
-                {
-                        $formatted= json_encode($data);
-                        return $this->formatJson($formatted);
-                }
-        }
-        private function formatJson($jsonData)
+        if(is_array($data))
         {
-            $formatted = $jsonData;
-            $formatted = str_replace('"{', '{', $formatted);
-            $formatted = str_replace('}"', '}', $formatted);
-
-            $formatted = str_replace('\\', '', $formatted);
-
-
-            return $formatted;
+              $formatted= json_encode($data);
+              return $this->formatJson($formatted);
         }
+    }
+    private function formatJson($jsonData){
+        $formatted = $jsonData;
+        $formatted = str_replace('"{', '{', $formatted);
+        $formatted = str_replace('}"', '}', $formatted);
+        $formatted = str_replace('\\', '', $formatted);
+        return $formatted;
+    }
 		private function isValidCall($apiKey)
 		{
 			$flag=false;
@@ -85,11 +81,10 @@ header('Access-Control-Allow-Origin: *');
 
 			$sql="SELECT api_key  FROM ".self::TABLE_API_DATA." WHERE api_key ='$apiKey' ";
 			$result = mysql_query($sql, $this->db);
-			if(mysql_num_rows($result) > 0)
-                        {
-                            $rows =  mysql_fetch_array($result,MYSQL_ASSOC);
-                            $apiKeyDB=$rows['api_key'];
-                            $flag =true;
+			if(mysql_num_rows($result) > 0) {
+          $rows =  mysql_fetch_array($result,MYSQL_ASSOC);
+          $apiKeyDB = $rows['api_key'];
+          $flag = true;
 			}
 			return $flag;
 		}
@@ -97,138 +92,109 @@ header('Access-Control-Allow-Origin: *');
 		/*
 		START  :: 28.2.15 :: Rajendra kumar sahoo
 		*/
-        public function executeGenericDQLQuery($query){
-                try{
-                    if(!$this->db)
-                    {
-                        $this->db = mysql_connect(self::DB_SERVER,self::DB_USER,self::DB_PASSWORD);
-                    }
-                    $result = mysql_query($query, $this->db);
-                    /* if(mysqli_errno($con) != 0){
-                        throw new Exception("Error   :".mysqli_errno($con)."   :  ".mysqli_error($con));
-                    } */
+    	public function executeGenericDQLQuery($query){
+          try{
+              if(!$this->db)
+              {
+                  $this->db = mysql_connect(self::DB_SERVER,self::DB_USER,self::DB_PASSWORD);
+              }
+              $result = mysql_query($query, $this->db);
+              /* if(mysqli_errno($con) != 0){
+                  throw new Exception("Error   :".mysqli_errno($con)."   :  ".mysqli_error($con));
+              } */
 
-                    $rows = array();
-                    while($row = mysql_fetch_array($result)){
-                        array_push($rows,$row);
-                    }
-                    //mysqli_close($con);
-                    return $rows;
+              $rows = array();
+              while($row = mysql_fetch_array($result)){
+                  array_push($rows,$row);
+              }
+              //mysqli_close($con);
+              return $rows;
 
-                }
-                catch(Exception $e){
-                    $response = array();
-                    $response['status'] = false;
-                    $response['message'] = $e->getMessage();
-                    $this->response($this->json($response), 200);
+          }
+          catch(Exception $e){
+              $response = array();
+              $response['status'] = false;
+              $response['message'] = $e->getMessage();
+              $this->response($this->json($response), 200);
+          }
+        }
+        public function executeGenericDMLQuery($query){
+            try{
+                $result = mysql_query($query, $this->db);
+                if(mysql_errno($this->db) != 0){
+                    throw new Exception("Error   :".mysql_errno($this->db)."   :  ".mysql_error($this->db));
                 }
 
             }
-            public function executeGenericDMLQuery($query){
-                try{
-                    $result = mysql_query($query, $this->db);
-                    if(mysql_errno($this->db) != 0){
-                        throw new Exception("Error   :".mysql_errno($this->db)."   :  ".mysql_error($this->db));
-                    }
-
-                }
-                catch(Exception $e){
-                    $response = array();
-                    $response['status'] = false;
-                    $response['message'] = $e->getMessage();
-                    //echo json_encode($response);
-                    $this->response($this->json($response), 200);
-                }
+            catch(Exception $e){
+                $response = array();
+                $response['status'] = false;
+                $response['message'] = $e->getMessage();
+                //echo json_encode($response);
+                $this->response($this->json($response), 200);
             }
-            public function executeGenericInsertQuery($query){
-                try{
-                    $result = mysql_query($query, $this->db);
-                    if(mysql_errno($this->db) != 0){
-                        throw new Exception("Error   :".mysql_errno($this->db)."   :  ".mysql_error($this->db));
-                    }
-                    return mysql_insert_id($this->db);
+        }
+        public function executeGenericInsertQuery($query){
+            try{
+                $result = mysql_query($query, $this->db);
+                if(mysql_errno($this->db) != 0){
+                    throw new Exception("Error   :".mysql_errno($this->db)."   :  ".mysql_error($this->db));
                 }
-                catch(Exception $e){
-                    $response = array();
-                    $response['status'] = false;
-                    $response['message'] = $e->getMessage();
-                    //echo json_encode($response);
-                    $this->response($this->json($response), 200);
-                }
+                return mysql_insert_id($this->db);
             }
-						public function sendResponse($statusCode,$status,$message = null ,$data = null)
-		        {
-							$response = array();
-							$response['statusCode'] = $statusCode;
-							$response['status'] = $status;
-							$response['message'] = $message || null;
-							$response['data'] = $data || null;
-							$this->response($this->json($response), 200);
-		        }
-            public function clearArray($arr){
-                unset($arr);
-                $arr = array();
-                return $arr;
+            catch(Exception $e){
+                $response = array();
+                $response['status'] = false;
+                $response['message'] = $e->getMessage();
+                //echo json_encode($response);
+                $this->response($this->json($response), 200);
             }
-        public function getUsers()
-        {
-        	   $sql="SELECT * FROM ".self::usersTable;
+        }
+				public function sendResponse($statusCode,$status,$message = null ,$data = null){
+					$response = array();
+					$response['statusCode'] = $statusCode;
+					$response['status'] = $status;
+					$response['message'] = $message || null;
+					$response['data'] = $data || null;
+					$this->response($this->json($response), 200);
+        }
+        public function clearArray($arr){
+            unset($arr);
+            $arr = array();
+            return $arr;
+        }
+        public function getUsers(){
+        	  $sql = "SELECT * FROM ".self::usersTable;
        			$rows = $this->executeGenericDQLQuery($sql);
-    				$this->response($this->json($rows), 200);
+    				$this->sendResponse(200,'success','',$this->json($rows));
         }
-				public function register()
-        {
-					$user_name = $this->_request['user_name'];
-					$password = md5($this->_request['password']);
-					$email = $this->_request['email'];
-					$first_name = $this->_request['first_name'];
-					$last_name = $this->_request['last_name'];
-					$sql = "INSERT INTO ".self::usersTable."(user_name, password, email, first_name, last_name) VALUES ('$first_name','$password','$email','$first_name','$last_name')";
-					$this->executeGenericDMLQuery($sql);
+				public function register(){
+					$user_data = $this->_request['user_data'];
+					$user_name = $user_data['user_name'];
+					$password = md5($user_data['password']);
+					$email = $user_data['email'];
+					$first_name = $user_data['first_name'];
+					$last_name = $user_data['last_name'];
+					$mobile = $user_data['mobile'];
+					$user_type = $user_data['user_type'];
+					$status = 0; //0 for inactive and 1 for active
+					$sql = "INSERT INTO ".self::usersTable."(user_type, user_name, mobile, password, email, first_name, last_name,status) VALUES ('$user_type','$user_name','$mobile','$password','$email','$first_name','$last_name','$status')";
+					$rows = $this->executeGenericDMLQuery($sql);
+					$this->sendResponse(200,"success","Successfully added");
         }
-				public function login()
-        {
-					
+				public function login() {
 					if(!isset($this->_request['user_name']) || !isset($this->_request['password']))
 						$this->sendResponse(202,"failed","validation Error","Invalid user name or password");
 					$user_name = $this->_request['user_name'];
 					$password = md5($this->_request['password']);
 					$sql = "select * from ".self::usersTable." where user_name = '$user_name' and password = '$password' limit 1";
-					// echo $sql;
 					$rows = $this->executeGenericDQLQuery($sql);
 					if(sizeof($rows))
 						$this->sendResponse(200,"success","ok");
 					else {
-							$this->sendResponse(200,"failure","fail");
+							$this->sendResponse(201,"failure","fail");
 					}
         }
-        public function postCountry()
-        {
-          $countryData = $this->_request['countryData'];
-          // echo $countryData;
-          $sql = "select * from country where CountryName = '".$countryData['countryName']."'";
-          $rows = $this->executeGenericDQLQuery($sql);
-          // print_r($rows);
-          $response = array();
-          if(sizeof($rows) > 0)
-          {
-            $response['status'] = "success" ;
-            $response['data'] = "country already exists";
-          }
-          else
-          {
-               $sql = "insert into country(CountryName,ISDCode,Currency) values('".$countryData['countryName']."' , '".$countryData['isdCode']."' , '".$countryData['currency']."')";
-
-               $rows = $this->executeGenericDMLQuery($sql);
-               $response['status'] = "success" ;
-               $response['data'] = "country enter successful";
-          }
-            $this->response($this->json($response), 200);
-        }
-
-
-        /*codes for emergency contact ends*/
-
 	}
 
 	$api = new API;

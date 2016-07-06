@@ -11,18 +11,16 @@ app.controller("Main_Controller",function($scope,$state,$localStorage,userServic
   * function : signIn
   */
   $scope.signIn = function(user){
-    localStorage.setItem('accessToken','123456');
-    // call the web service to make signIn
-    // redirec to the dashboard
-    console.log(user);
     userService.login(user).then(function(pRes) {
-      $scope.is_loggedin = true;
-      $state.go("dashboard");
+      if(pRes.statusCode == 200){
+        $scope.is_loggedin = true;
+        localStorage.setItem('accessToken','123456');
+        $state.go("dashboard");
+      }
     },
     function(err) {
       console.log(">>>>>>>>>>>>>   ",err);
     })
-
   }
   $scope.signOut = function(){
     localStorage.setItem('accessToken','');
@@ -31,4 +29,32 @@ app.controller("Main_Controller",function($scope,$state,$localStorage,userServic
     $scope.is_loggedin = false;
     $state.go("login");
   }
+});
+app.controller("userController",function($scope,$state,$localStorage,userService){
+  $scope.getUserList = function(){
+    userService.getUserList().then(function(pRes) {
+      if(pRes.statusCode == 200){
+        console.log(pRes.data);
+      }
+    },
+    function(err) {
+      console.log(">>>>>>>>>>>>>   ",err);
+    })
+  }
+  $scope.goToEdit = function(){
+    $state.go('edituser');
+  }
+  $scope.addUser = function(){
+    userService.addUser($scope.user).then(function(pRes) {
+      if(pRes.statusCode == 200){
+        console.log('success');
+      }
+    },
+    function(err) {
+      console.log(">>>>>>>>>>>>>   ",err);
+    })
+  }
+});
+app.controller("BuildingPlanController",function($scope,$state,$localStorage,userService){
+
 });
