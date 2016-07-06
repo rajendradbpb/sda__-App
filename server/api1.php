@@ -25,6 +25,53 @@ header('Access-Control-Allow-Origin: *');
 		private $proxy = NULL;
 		private $storeApiLogin = false;
 
+
+		public $errorCodes = array(
+				"200" => "The client request has succeeded",
+				"201" => "Created",
+				"202" => "Accepted",
+				"203" => 	"Non-authoritative information.",
+				"204" => 	"No content",
+				"205" => 	"Reset content",
+				"206" => 	"Partial content",
+
+				"302" => "Object moved",
+				"304" => "Not modified",
+				"307" => "Temporary redirect",
+
+				"400" => "Bad request",
+				"401" => "Access denied",
+				"402" => "Payment Required",
+				"403" => "Forbidden",
+				"404" => "Not found",
+				"405" => "HTTP verb used to access this page is not allowed",
+				"406" => "Client browser does not accept the MIME type of the requested page",
+				"407" => "Proxy authentication required",
+				"412" => "Precondition failed",
+				"413" => "Request entity too large",
+				"414" => "Request-URL too long",
+				"415" => "Unsupported media type",
+				"416" => "Requested range not satisfiable",
+				"417" => "Execution failed",
+				"423" => "Locked error",
+
+				"500" => "Internal server error",
+				"501" => "Header values specify a configuration that is not implemented",
+				"502" => "Bad Gateway",
+				"503" => "Service unavailable",
+				"504" => "Gateway timeout",
+				"505" => "HTTP version not supported"
+
+		);
+		public $messages = array(
+				"operationNotDefined" => "Operation not Defined",
+				"dataFetched" => "data fetched success",
+				"userCreated" => "User created successfully",
+				"deleted" => "data deleted successfully",
+				"userUpdated" => "data updated successfully"
+		);
+
+
 		public function __construct(){
 			parent::__construct();
 			$this->dbConnect();
@@ -127,7 +174,7 @@ header('Access-Control-Allow-Origin: *');
                 if(mysql_errno($this->db) != 0){
                     throw new Exception("Error   :".mysql_errno($this->db)."   :  ".mysql_error($this->db));
                 }
-
+								return mysql_affected_rows(); // return the affected rows
             }
             catch(Exception $e){
                 $response = array();
@@ -157,6 +204,13 @@ header('Access-Control-Allow-Origin: *');
 					$response = array();
 					$response['statusCode'] = $statusCode;
 					$response['status'] = $status;
+					$response['message'] = $message;
+					$response['data'] = $data;
+					$this->response($this->json($response), 200);
+        }
+				public function sendResponse2($statusCode,$message = null ,$data = null){
+					$response = array();
+					$response[$statusCode] = $this->errorCodes[$statusCode];
 					$response['message'] = $message;
 					$response['data'] = $data;
 					$this->response($this->json($response), 200);
@@ -200,6 +254,7 @@ header('Access-Control-Allow-Origin: *');
     				$user['status'] = $rows[0]['status'];
   					$this->sendResponse(200,"success","",$user);
         }
+
 				public function register(){
 					$user_data = $this->_request['user_data'];
 					$user_name = $user_data['user_name'];
@@ -227,7 +282,92 @@ header('Access-Control-Allow-Origin: *');
 							$this->sendResponse(201,"failure","fail");
 					}
         }
-	}
+
+				public function user() {
+						if(!isset($this->_request['operation']))
+							$this->sendResponse2(400,$this->messages['operationNotDefined']);
+						$sql = null;
+						switch ($this->_request['operation']) {
+							case 'create':
+								$user_data = $this->_request['user_data'];
+								$user_name = $user_data['user_name'];
+								$password = md5($user_data['password']);
+								$email = $user_data['email'];
+								$first_name = $user_data['first_name'];
+								$last_name = $user_data['last_name'];
+								$mobile = $user_data['mobile'];
+								$user_type = $user_data['user_type'];
+								$status = 0; //0 for inactive and 1 for active
+								$sql = "INSERT INTO ".self::usersTable."(user_type, user_name, mobile, password, email, first_name, last_name,status) VALUES ('$user_type','$user_name','$mobile','$password','$email','$first_name','$last_name','$status')";
+								// echo $sql;
+								$rows = $this->executeGenericDMLQuery($sql);
+								$this->sendResponse2(200,$this->messages['userCreated']);
+								break;
+							case 'update':
+							$user_data = isset($this->_request['user_data']) ? $this->_request['user_data'] : $this->_request;
+							$user_name = $user_data['user_name'];
+							$password = md5($user_data['password']);
+							$email = $user_data['email'];
+							$first_name = $user_data['first_name'];
+							$last_name = $user_data['last_name'];
+							$mobile = $user_data['mobile'];
+									$sql = "update ".self::usersTable." set ";
+									if(isset($user_data['user_name']))
+										$sql .=" user_name ='$user_name'";
+									if(isset($user_data['password']))
+										$sql .=" ,password ='$password' ";
+									if(isset($user_data['email']))
+										$sql .=" ,email ='$email'";
+									if(isset($user_data['first_name']))
+										$sql .=" ,first_name ='$first_name'";
+									if(isset($user_data['last_name']))
+										$sql .=" ,last_name ='$last_name'";
+									if(isset($user_data['mobile']))
+										$sql .=" ,mobile ='$mobile'";
+									$sql .= " where id=".$user_data['id'];
+									// $user_type = $user_data['user_type'];
+									// $status = 0; //0 for inactive and 1 for active
+									// echo $sql;
+									$result = $this->executeGenericDMLQuery($sql);
+									if($result){
+										$this->sendResponse2(200,$this->messages['userUpdated']);
+									}
+								break;
+							case 'delete':
+							$user_data = isset($this->_request['user_data']) ? $this->_request['user_data'] : $this->_request;
+							  $sql = "delete from ".self::usersTable. " where id=".$user_data['id'];
+								$result = $this->executeGenericDMLQuery($sql);
+								if($result){
+									$this->sendResponse2(200,$this->messages['deleted']);
+								}
+								break;
+							// this will fetche the all the users and the single user data if the id is mention for the user
+							case 'get':
+								$user_data = isset($this->_request['user_data']) ? $this->_request['user_data'] : $this->_request;
+								$sql = "SELECT * FROM ".self::usersTable;
+								if(isset($this->_request['id']))
+									$sql .= " where id=".$this->_request['id'];
+								$rows = $this->executeGenericDQLQuery($sql);
+								$users = array();
+								for($i=0;$i<sizeof($rows);$i++)
+								{
+									$users[$i]['id'] = $rows[$i]['id'];
+									$users[$i]['user_type'] = $rows[$i]['user_type'];
+									$users[$i]['user_name'] = $rows[$i]['user_name'];
+									$users[$i]['mobile'] = $rows[$i]['mobile'];
+									$users[$i]['email'] = $rows[$i]['email'];
+									$users[$i]['first_name'] = $rows[$i]['first_name'];
+									$users[$i]['last_name'] = $rows[$i]['last_name'];
+									$users[$i]['token'] = $rows[$i]['token'];
+									$users[$i]['status'] = $rows[$i]['status'];
+								}
+								$this->sendResponse2(200,$this->messages['dataFetched'],$users);
+								break;
+							default:
+									$this->sendResponse2(400,$this->messages['operationNotDefined']);
+						}
+				}
+			}
 
 	$api = new API;
 	$api->processApi();
