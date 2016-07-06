@@ -1,4 +1,4 @@
-<section class="content-header" ng-init="getUserList()"> 
+<section class="content-header" ng-init="getUserList()">
   <h1 class="">
     Users list
     <small>mangage users</small>
@@ -26,30 +26,21 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>Santosh</td>
-                <td>Majhi</td>
-                <td>santoshmajhi99@gmail.com</td>
-                <td>9438753143</td>
-                <td><span class="label label-success">Active</span></td>
+              <tr ng-repeat="user in userList" ng-if="user.user_type != '1'">
+                <td>{{user.id}}</td>
+                <td>{{user.first_name}}</td>
+                <td>{{user.last_name}}</td>
+                <td>{{user.email}}</td>
+                <td>{{user.mobile}}</td>
                 <td>
-                  <a href="" class="option-btn" ng-click="goToEdit()"><i class="fa fa-pencil-square-o"></i></a>
-                  <a href="" class="option-btn"><i class="fa fa-trash"></i></a>
-                  <a href="" class="option-btn"><span class="label label-danger">Deactivate</span></a>
+                  <span ng-if="user.status == '1'" class="label label-success">Active</span>
+                  <span class="label label-danger" ng-if="user.status == '0'">Inactive</span>
                 </td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Santosh</td>
-                <td>Majhi</td>
-                <td>santoshmajhi99@gmail.com</td>
-                <td>9438753143</td>
-                <td><span class="label label-danger">Inactive</span></td>
                 <td>
-                  <a href="" class="option-btn" ng-click="goToEdit()"><i class="fa fa-pencil-square-o"></i></a>
-                  <a href="" class="option-btn"><i class="fa fa-trash"></i></a>
-                  <a href="" class="option-btn"><span class="label label-success">Activate</span></a>
+                  <a href="" class="option-btn" ng-click="goToEdit(user.id)"><i class="fa fa-pencil-square-o"></i></a>
+                  <a href="" class="option-btn" ng-click="deleteUser(user.id)"><i class="fa fa-trash"></i></a>
+                  <a href="" class="option-btn" ng-if="user.status == '1'" ng-click="changeStatus(user.id,0)"><span class="label label-danger">Deactivate</span></a>
+                  <a href="" class="option-btn" ng-if="user.status == '0'" ng-click="changeStatus(user.id,1)"><span class="label label-success">Activate</span></a>
                 </td>
               </tr>
           </table>

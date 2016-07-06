@@ -34,20 +34,29 @@ app.controller("userController",function($scope,$state,$localStorage,userService
   $scope.getUserList = function(){
     userService.getUserList().then(function(pRes) {
       if(pRes.status == 200){
-        console.log(pRes.data);
+        $scope.userList = pRes.data.data;
       }
     },
     function(err) {
       console.log(">>>>>>>>>>>>>   ",err);
     })
   }
-  $scope.goToEdit = function(){
+  $scope.goToEdit = function(id){
+    localStorage.setItem('user_id',id);
+    $state.go('edituser');
+  }
+  $scope.deleteUser = function(id){
+    localStorage.setItem('user_id',id);
+    $state.go('edituser');
+  }
+  $scope.changeStatus = function(id,status){
+    localStorage.setItem('user_id',id);
     $state.go('edituser');
   }
   $scope.addUser = function(){
     userService.addUser($scope.user).then(function(pRes) {
-      if(pRes.statusCode == 200){
-        console.log('success');
+      if(pRes.status == 200){
+        $state.go('users');
       }
     },
     function(err) {
