@@ -26,12 +26,7 @@ app.factory("userService", function ($http,CONFIG) {
       return response;
     },
     getUserList: function () {
-      var _serializedData = $.param({"reqmethod": 'getUsers'});
-      var response = $http({
-          method: 'POST',
-          url: CONFIG.HTTP_HOST,
-          reqmethod : _serializedData,
-      });
+      var response = $http.get(CONFIG.HTTP_HOST+"/?reqmethod=getUsers");
       return response;
     }
   }

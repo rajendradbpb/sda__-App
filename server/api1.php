@@ -66,6 +66,9 @@ header('Access-Control-Allow-Origin: *');
               $formatted= json_encode($data);
               return $this->formatJson($formatted);
         }
+				else {
+					return $data;
+				}
     }
     private function formatJson($jsonData){
         $formatted = $jsonData;
@@ -154,8 +157,8 @@ header('Access-Control-Allow-Origin: *');
 					$response = array();
 					$response['statusCode'] = $statusCode;
 					$response['status'] = $status;
-					$response['message'] = $message || null;
-					$response['data'] = $data || null;
+					$response['message'] = $message;
+					$response['data'] = $data;
 					$this->response($this->json($response), 200);
         }
         public function clearArray($arr){
@@ -166,7 +169,20 @@ header('Access-Control-Allow-Origin: *');
         public function getUsers(){
         	  $sql = "SELECT * FROM ".self::usersTable;
        			$rows = $this->executeGenericDQLQuery($sql);
-    				$this->sendResponse(200,'success','',$this->json($rows));
+						$users = array();
+						for($i=0;$i<sizeof($rows);$i++)
+	    			{
+	    				$users[$i]['id'] = $rows[$i]['id'];
+	    				$users[$i]['user_type'] = $rows[$i]['user_type'];
+	    				$users[$i]['user_name'] = $rows[$i]['user_name'];
+	    				$users[$i]['mobile'] = $rows[$i]['mobile'];
+	    				$users[$i]['email'] = $rows[$i]['email'];
+	    				$users[$i]['first_name'] = $rows[$i]['first_name'];
+	    				$users[$i]['last_name'] = $rows[$i]['last_name'];
+	    				$users[$i]['token'] = $rows[$i]['token'];
+	    				$users[$i]['status'] = $rows[$i]['status'];
+	    			}
+    				$this->sendResponse(200,"success","",$users);
         }
 				public function register(){
 					$user_data = $this->_request['user_data'];
