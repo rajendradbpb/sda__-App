@@ -39,8 +39,8 @@
                 <td>
                   <a href="" class="option-btn" ng-click="goToEdit(user.id)"><i class="fa fa-pencil-square-o"></i></a>
                   <a href="" class="option-btn" ng-click="deleteUser(user.id)"><i class="fa fa-trash"></i></a>
-                  <a href="" class="option-btn" ng-if="user.status == '1'" ng-click="changeStatus(user.id,0)"><span class="label label-danger">Deactivate</span></a>
-                  <a href="" class="option-btn" ng-if="user.status == '0'" ng-click="changeStatus(user.id,1)"><span class="label label-success">Activate</span></a>
+                  <a href="" class="option-btn" ng-if="user.status == '1'" ng-click="changeStatus(user.id,0,$index)"><span class="label label-danger">Deactivate</span></a>
+                  <a href="" class="option-btn" ng-if="user.status == '0'" ng-click="changeStatus(user.id,1,$index)"><span class="label label-success">Activate</span></a>
                 </td>
               </tr>
           </table>

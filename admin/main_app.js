@@ -48,7 +48,12 @@ app.config(function($stateProvider, $urlRouterProvider) {
     })
     .state('edituser', {
         templateUrl: 'pages/users/edituser.html',
-        url: '/edituser',
+        url: '/edituser/:id',
+        controller: "userController"
+    })
+    .state('userProfile', {
+        templateUrl: 'pages/users/userProfile.html',
+        url: '/userProfile',
         controller: "userController"
     })
 });

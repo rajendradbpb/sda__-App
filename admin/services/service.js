@@ -28,6 +28,22 @@ app.factory("userService", function ($http,CONFIG) {
     getUserList: function () {
       var response = $http.get(CONFIG.HTTP_HOST+"/?reqmethod=getUsers");
       return response;
+    },
+    getUser: function (id) {
+      var response = $http.get(CONFIG.HTTP_HOST+"/?reqmethod=getUserById&id="+id);
+      return response;
+    },
+    manageUser: function (data,option) {
+      var _serializedData = $.param({"reqmethod": 'user',"operation":option, "user_data":data});
+      var response = $http({
+          method: 'POST',
+          url: CONFIG.HTTP_HOST,
+          data : _serializedData,
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+          }
+      });
+      return response;
     }
   }
 });

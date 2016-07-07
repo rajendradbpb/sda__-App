@@ -305,25 +305,48 @@ header('Access-Control-Allow-Origin: *');
 								break;
 							case 'update':
 							$user_data = isset($this->_request['user_data']) ? $this->_request['user_data'] : $this->_request;
-							$user_name = $user_data['user_name'];
-							$password = md5($user_data['password']);
-							$email = $user_data['email'];
-							$first_name = $user_data['first_name'];
-							$last_name = $user_data['last_name'];
-							$mobile = $user_data['mobile'];
+							$user_name = isset($user_data['user_name']) ? $user_data['user_name'] : '';
+							$password = isset($user_data['password']) ? md5($user_data['password']) : '';
+							$email = isset($user_data['email']) ? $user_data['email'] : '';
+							$first_name = isset($user_data['first_name']) ? $user_data['first_name'] : '';
+							$last_name = isset($user_data['last_name']) ? $user_data['last_name'] : '';
+							$mobile = isset($user_data['mobile']) ? $user_data['mobile'] : '';
+							$status = isset($user_data['status']) ? $user_data['status'] : '';
+									$previous = false;
 									$sql = "update ".self::usersTable." set ";
-									if(isset($user_data['user_name']))
-										$sql .=" user_name ='$user_name'";
-									if(isset($user_data['password']))
-										$sql .=" ,password ='$password' ";
-									if(isset($user_data['email']))
-										$sql .=" ,email ='$email'";
-									if(isset($user_data['first_name']))
-										$sql .=" ,first_name ='$first_name'";
-									if(isset($user_data['last_name']))
-										$sql .=" ,last_name ='$last_name'";
-									if(isset($user_data['mobile']))
-										$sql .=" ,mobile ='$mobile'";
+									if(isset($user_data['user_name'])){
+										$previous = true;
+										$sql .="user_name ='$user_name'";
+									}
+									if(isset($user_data['password'])){
+										$comma = ($previous) ? ',' : '';
+										$sql .="$comma password ='$password' ";
+										$previous = true;
+									}
+									if(isset($user_data['email'])){
+										$comma = ($previous) ? ',' : '';
+										$sql .="$comma email ='$email'";
+										$previous = true;
+									}
+									if(isset($user_data['first_name'])){
+										$comma = ($previous) ? ',' : '';
+										$sql .="$comma first_name ='$first_name'";
+										$previous = true;
+									}
+									if(isset($user_data['last_name'])){
+										$comma = ($previous) ? ',' : '';
+										$sql .="$comma last_name ='$last_name'";
+										$previous = true;
+									}
+									if(isset($user_data['mobile'])){
+										$comma = ($previous) ? ',' : '';
+										$sql .="$comma mobile ='$mobile'";
+										$previous = true;
+									}
+									if(isset($user_data['status'])){
+										$comma = ($previous) ? ',' : '';
+										$sql .="$comma status = $status";
+									}
 									$sql .= " where id=".$user_data['id'];
 									// $user_type = $user_data['user_type'];
 									// $status = 0; //0 for inactive and 1 for active
@@ -345,8 +368,8 @@ header('Access-Control-Allow-Origin: *');
 							case 'get':
 								$user_data = isset($this->_request['user_data']) ? $this->_request['user_data'] : $this->_request;
 								$sql = "SELECT * FROM ".self::usersTable;
-								if(isset($this->_request['id']))
-									$sql .= " where id=".$this->_request['id'];
+								if(isset($user_data['id']))
+									$sql .= " where id=".$user_data['id'];
 								$rows = $this->executeGenericDQLQuery($sql);
 								$users = array();
 								for($i=0;$i<sizeof($rows);$i++)
