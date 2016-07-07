@@ -1,4 +1,4 @@
-app.controller("Main_Controller",function($scope,$state,$localStorage,userService){
+app.controller("Main_Controller",function($scope,$state,$localStorage,userService,Util){
   /*******************************************************/
   /*************This is use for check user login**********/
   /*******************************************************/
@@ -36,7 +36,7 @@ app.controller("Main_Controller",function($scope,$state,$localStorage,userServic
     $state.go("login");
   }
 });
-app.controller("userController",function($scope,$state,$localStorage,userService,$stateParams){
+app.controller("userController",function($scope,$state,$localStorage,userService,$stateParams,Util){
   /*******************************************************/
   /*************This is use for get the user list*********/
   /*******************************************************/
@@ -99,13 +99,11 @@ app.controller("userController",function($scope,$state,$localStorage,userService
       "status":status
     }
     userService.manageUser(obj,'update').then(function(pRes) {
-      console.log(pRes);
       if(pRes.status == 200){
         $scope.userList[index].status = status.toString();
       }
     },
     function(err) {
-      console.log(">>>>>>>>>>>>>   ",err);
     })
   }
   /*******************************************************/
@@ -119,14 +117,13 @@ app.controller("userController",function($scope,$state,$localStorage,userService
       "email":$scope.userDetails.email,
       "mobile":$scope.userDetails.mobile,
     }
-    userService.updateUser(obj,'update').then(function(pRes) {
-      console.log(pRes);
+    userService.manageUser(obj,'update').then(function(pRes) {
       if(pRes.status == 200){
-        console.log('yes');
+        Util.alertMessage('success', pRes.data.message);
       }
     },
     function(err) {
-      console.log(">>>>>>>>>>>>>   ",err);
+      Util.alertMessage('danger', pRes.data.message);
     })
   }
   /*******************************************************/
@@ -141,6 +138,13 @@ app.controller("userController",function($scope,$state,$localStorage,userService
     function(err) {
       console.log(">>>>>>>>>>>>>   ",err);
     })
+  }
+  /*******************************************************/
+  /*************This is use for add new user**************/
+  /*******************************************************/
+  $scope.currentTab = 'myprofile';
+  $scope.changeTab = function(tab){
+    $scope.currentTab = tab;
   }
 });
 app.controller("BuildingPlanController",function($scope,$state,$localStorage,userService){

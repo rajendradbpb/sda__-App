@@ -60,3 +60,15 @@ app.config(function($stateProvider, $urlRouterProvider) {
 app.constant('CONFIG', {
   'HTTP_HOST': '../server/api1.php' //client staging
 })
+app.factory('Util', ['$rootScope',  '$timeout' , function( $rootScope, $timeout){
+    var Util = {};
+    $rootScope.alerts =[];
+    Util.alertMessage = function(msgType, message){
+        var alert = { type:msgType , msg: message };
+        $rootScope.alerts.push( alert );
+        $timeout(function(){
+            $rootScope.alerts.splice($rootScope.alerts.indexOf(alert), 1);
+        }, 5000);
+    };
+    return Util;
+}]);
