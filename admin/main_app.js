@@ -26,8 +26,18 @@ app.config(function($stateProvider, $urlRouterProvider) {
             url: '/register'
         })
       .state('buildingPlan', {
-          templateUrl: 'pages/buildingPlan.html',
+          templateUrl: 'pages/users/buildingPlanList.html',
           url: '/buildingPlan',
+          controller:"BuildingPlanController",
+          onEnter: function($localStorage, $state) {
+              if (!localStorage.getItem('accessToken')) {
+                  $state.go('login');
+              }
+          }
+      })
+      .state('newplan', {
+          templateUrl: 'pages/buildingPlan.html',
+          url: '/newplan',
           controller:"BuildingPlanController",
           onEnter: function($localStorage, $state) {
               if (!localStorage.getItem('accessToken')) {
