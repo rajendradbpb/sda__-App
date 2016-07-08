@@ -3,7 +3,7 @@
     Building plan List
     <small>control panel</small>
   </h1>
-  <button class="btn btn-primary pull-right" ui-sref="newplan"><i class="fa fa-plus"></i> Add Building Plan</button>
+  <button class="btn btn-primary pull-right" ui-sref="newplan" ng-if="user_type == '3'"><i class="fa fa-plus"></i> Add Building Plan</button>
 </section>
 <section class="content">
   <div class="row">
@@ -22,6 +22,7 @@
                 <th>Date</th>
                 <th>Document</th>
                 <th>Status</th>
+                <th ng-if="user_type == '2'">Remarks</th>
               </tr>
             </thead>
             <tbody>
@@ -31,7 +32,14 @@
                 <td>438</td>
                 <td>04/07/2016</td>
                 <td><a href="">View</a></td>
-                <td>Pending</td>
+                <td>
+                  <span ng-if="user_type != '2'">Pending</span>
+                  <a href="" ng-if="user_type == '2'"><span class="label label-success">Accepts</span></a>
+                  <a href="" ng-if="user_type == '2'"><span class="label label-danger">Reject</span></a>
+                </td>
+                <td ng-if="user_type == '2'">
+                  <input type="text"  class="form-control" name="first_name" placeholder="Remarks">
+                </td>
               </tr>
           </table>
         </div>

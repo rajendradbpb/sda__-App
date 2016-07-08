@@ -1,10 +1,12 @@
-app.controller("Main_Controller",function($scope,$state,$localStorage,userService,Util){
+app.controller("Main_Controller",function($scope,$rootScope,$state,$localStorage,userService,Util){
   /*******************************************************/
   /*************This is use for check user login**********/
   /*******************************************************/
   $scope.getUseDetails = function(){
     if(localStorage.getItem('accessToken')){
       $scope.is_loggedin = true;
+      $rootScope.user_type = localStorage.getItem('userType');
+      console.log($rootScope.user_type);
     }
     else{
       $scope.is_loggedin = false;
@@ -17,7 +19,10 @@ app.controller("Main_Controller",function($scope,$state,$localStorage,userServic
     userService.login(user).then(function(pRes) {
       if(pRes.status == 200){
         $scope.is_loggedin = true;
-        localStorage.setItem('accessToken','123456');
+        $rootScope.user_type = pRes.data.data[0].user_type;
+        console.log(pRes.data.data[0]);
+        localStorage.setItem('accessToken',pRes.data.data[0].token);
+        localStorage.setItem('userType',pRes.data.data[0].user_type);
         $state.go("dashboard");
       }
     },
@@ -29,11 +34,17 @@ app.controller("Main_Controller",function($scope,$state,$localStorage,userServic
   /*************This is use for user signout**************/
   /*******************************************************/
   $scope.signOut = function(){
-    localStorage.setItem('accessToken','');
-    // call the web service to make signOut and remove the token
-    // redirec to the login page
-    $scope.is_loggedin = false;
-    $state.go("login");
+    userService.logout(localStorage.getItem('accessToken')).then(function(pRes) {
+      if(pRes.status == 200){
+        console.log(pRes.data.message);
+        $scope.is_loggedin = false;
+        localStorage.setItem('accessToken','');
+        $state.go("login");
+      }
+    },
+    function(err) {
+      console.log(">>>>>>>>>>>>>   ",err);
+    })
   }
 });
 app.controller("userController",function($scope,$state,$localStorage,userService,$stateParams,Util){
@@ -147,6 +158,6 @@ app.controller("userController",function($scope,$state,$localStorage,userService
     $scope.currentTab = tab;
   }
 });
-app.controller("BuildingPlanController",function($scope,$state,$localStorage,userService){
-
+app.controller("BuildingPlanController",function($scope,$rootScope,$state,$localStorage,userService){
+  console.log($rootScope.user_type);
 });

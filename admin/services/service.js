@@ -12,6 +12,18 @@ app.factory("userService", function ($http,CONFIG) {
       });
       return response;
     },
+    logout: function (data) {
+      var _serializedData = $.param({"reqmethod": 'logout', "token":data});
+      var response = $http({
+          method: 'POST',
+          url: CONFIG.HTTP_HOST,
+          data : _serializedData,
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+          }
+      });
+      return response;
+    },
     addUser: function (data) {
       console.log(data);
       var _serializedData = $.param({"reqmethod": 'register', "user_data":data});

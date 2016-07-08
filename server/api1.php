@@ -68,9 +68,10 @@ header('Access-Control-Allow-Origin: *');
 				"dataFetched" => "data fetched success",
 				"userCreated" => "User created successfully",
 				"deleted" => "data deleted successfully",
-				"userUpdated" => "data updated successfully"
+				"userUpdated" => "data updated successfully",
+				"loginSuccess" => "successfully Logedin",
+				"userLogout" => "Successfully log out"
 		);
-
 
 		public function __construct(){
 			parent::__construct();
@@ -138,7 +139,15 @@ header('Access-Control-Allow-Origin: *');
 			}
 			return $flag;
 		}
-
+		public function generateRandomString($length = 60) {
+		    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		    $charactersLength = strlen($characters);
+		    $randomString = '';
+		    for ($i = 0; $i < $length; $i++) {
+		        $randomString .= $characters[rand(0, $charactersLength - 1)];
+		    }
+		    return $randomString;
+		}
 		/*
 		START  :: 28.2.15 :: Rajendra kumar sahoo
 		*/
@@ -274,14 +283,46 @@ header('Access-Control-Allow-Origin: *');
 						$this->sendResponse(202,"failed","validation Error","Invalid user name or password");
 					$user_name = $this->_request['user_name'];
 					$password = md5($this->_request['password']);
-					$sql = "select * from ".self::usersTable." where user_name = '$user_name' and password = '$password' limit 1";
-					$rows = $this->executeGenericDQLQuery($sql);
-					if(sizeof($rows))
-						$this->sendResponse(200,"success","ok");
-					else {
+					$token = $this->generateRandomString();
+					$sql = "update ".self::usersTable." set token='$token' where user_name='$user_name'";
+					$result = $this->executeGenericDMLQuery($sql);
+					if($result){
+						$sql = "select * from ".self::usersTable." where user_name = '$user_name' and password = '$password' limit 1";
+						$rows = $this->executeGenericDQLQuery($sql);
+						if(sizeof($rows)){
+								$users = array();
+								for($i = 0; $i < sizeof($rows); $i++)
+								{
+									$users[$i]['id'] = $rows[$i]['id'];
+									$users[$i]['user_type'] = $rows[$i]['user_type'];
+									$users[$i]['user_name'] = $rows[$i]['user_name'];
+									$users[$i]['mobile'] = $rows[$i]['mobile'];
+									$users[$i]['email'] = $rows[$i]['email'];
+									$users[$i]['first_name'] = $rows[$i]['first_name'];
+									$users[$i]['last_name'] = $rows[$i]['last_name'];
+									$users[$i]['token'] = $rows[$i]['token'];
+									$users[$i]['status'] = $rows[$i]['status'];
+								}
+								$this->sendResponse2(200,$this->messages['loginSuccess'],$users);
+						}
+						else {
 							$this->sendResponse(201,"failure","fail");
+						}
+					}
+					else{
+						$this->sendResponse(202,"failed","validation Error","Invalid user name or password");
 					}
         }
+				public function logout(){
+					if(isset($this->_request['token'])){
+						$token = $this->_request['token'];
+						$sql = "update ".self::usersTable." set token='' where token='$token'";
+						$result = $this->executeGenericDMLQuery($sql);
+						if($result){
+							$this->sendResponse2(200,$this->messages['userLogout']);
+						}
+					}
+				}
 
 				public function user() {
 						if(!isset($this->_request['operation']))
