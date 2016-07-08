@@ -24,6 +24,19 @@ app.factory("userService", function ($http,CONFIG) {
       });
       return response;
     },
+    checkPassword: function (data) {
+      console.log(data);
+      var _serializedData = $.param({"reqmethod": 'checkPassword', "token":data.token,"password":data.password});
+      var response = $http({
+          method: 'POST',
+          url: CONFIG.HTTP_HOST,
+          data : _serializedData,
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+          }
+      });
+      return response;
+    },
     addUser: function (data) {
       console.log(data);
       var _serializedData = $.param({"reqmethod": 'register', "user_data":data});

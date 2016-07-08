@@ -323,6 +323,21 @@ header('Access-Control-Allow-Origin: *');
 						}
 					}
 				}
+				public function checkPassword(){
+					if(isset($this->_request['password']) && isset($this->_request['token'])){
+						$cpass = $this->_request['password'];
+						$token = $this->_request['token'];
+						$sql = "SELECT password FROM ".self::usersTable." where token='$token'";
+						$rows = $this->executeGenericDQLQuery($sql);
+						$users = array();
+						if($rows[0]['password'] == md5($cpass)){
+							$this->sendResponse(200,"success","ok");
+						}
+						else{
+							$this->sendResponse(201,"failure","fail");
+						}
+					}
+				}
 
 				public function user() {
 						if(!isset($this->_request['operation']))

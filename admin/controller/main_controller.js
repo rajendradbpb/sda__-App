@@ -157,6 +157,23 @@ app.controller("userController",function($scope,$state,$localStorage,userService
   $scope.changeTab = function(tab){
     $scope.currentTab = tab;
   }
+  /*******************************************************/
+  /*************This is use for add new user**************/
+  /*******************************************************/
+  $scope.currentTab = 'myprofile';
+  $scope.checkCurrentPassword = function(pwd){
+    console.log(pwd);
+    var obj = {
+      "token":localStorage.getItem('accessToken'),
+      "password":pwd
+    }
+    userService.checkPassword(obj).then(function(pRes) {
+      console.log(pRes);
+      $scope.is_correct_pwd = (pRes.data.statusCode == 200) ? true : false;
+    },function(err) {
+      console.log(">>>>>>>>>>>>>   ",err);
+    })
+  }
 });
 app.controller("BuildingPlanController",function($scope,$rootScope,$state,$localStorage,userService){
   console.log($rootScope.user_type);
