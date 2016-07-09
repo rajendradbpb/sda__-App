@@ -51,10 +51,10 @@
   <div ui-view></div>
 </div>
 <div class="" ng-if="is_loggedin">
-  <div class="wrapper">
+  <div class="wrapper" >
     <div ng-include="'pages/header.html'"></div>
     <div ng-include="'pages/sidebar.html'"></div>
-    <div class="content-wrapper">
+    <div class="content-wrapper" update-height>
       <div ui-view></div>
     </div>
     <div ng-include="'pages/footer.html'"></div>
