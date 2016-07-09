@@ -70,7 +70,8 @@ header('Access-Control-Allow-Origin: *');
 				"deleted" => "data deleted successfully",
 				"userUpdated" => "data updated successfully",
 				"loginSuccess" => "successfully Logedin",
-				"userLogout" => "Successfully log out"
+				"userLogout" => "Successfully log out",
+				"changedPassword" => "Successfully Changed your password"
 		);
 
 		public function __construct(){
@@ -263,6 +264,23 @@ header('Access-Control-Allow-Origin: *');
     				$user['status'] = $rows[0]['status'];
   					$this->sendResponse(200,"success","",$user);
         }
+				public function getUserDetails(){
+						$token = $this->_request['token'];
+						$sql = "SELECT * FROM ".self::usersTable;
+						$sql .= " where token='$token'";
+						$rows = $this->executeGenericDQLQuery($sql);
+						$user = array();
+						$user['id'] = $rows[0]['id'];
+						$user['user_type'] = $rows[0]['user_type'];
+						$user['user_name'] = $rows[0]['user_name'];
+						$user['mobile'] = $rows[0]['mobile'];
+						$user['email'] = $rows[0]['email'];
+						$user['first_name'] = $rows[0]['first_name'];
+						$user['last_name'] = $rows[0]['last_name'];
+						$user['token'] = $rows[0]['token'];
+						$user['status'] = $rows[0]['status'];
+						$this->sendResponse(200,"success","",$user);
+				}
 
 				public function register(){
 					$user_data = $this->_request['user_data'];
@@ -322,6 +340,51 @@ header('Access-Control-Allow-Origin: *');
 							$this->sendResponse2(200,$this->messages['userLogout']);
 						}
 					}
+				}
+				public function changePassword(){
+					if(isset($this->_request['token'])){
+						$token = $this->_request['token'];
+						$password = md5($this->_request['password']);
+						$sql = "update ".self::usersTable." set password='$password' where token='$token'";
+						$result = $this->executeGenericDMLQuery($sql);
+						if($result){
+							$this->sendResponse2(200,$this->messages['changedPassword']);
+						}
+					}
+				}
+				public function updateProfile(){
+					$user_data = isset($this->_request['user_data']) ? $this->_request['user_data'] : $this->_request;
+					$email = isset($user_data['email']) ? $user_data['email'] : '';
+					$first_name = isset($user_data['first_name']) ? $user_data['first_name'] : '';
+					$last_name = isset($user_data['last_name']) ? $user_data['last_name'] : '';
+					$mobile = isset($user_data['mobile']) ? $user_data['mobile'] : '';
+					$token = $user_data['token'];
+							$previous = false;
+							$sql = "update ".self::usersTable." set ";
+							if(isset($user_data['email'])){
+								$sql .="email ='$email'";
+								$previous = true;
+							}
+							if(isset($user_data['first_name'])){
+								$comma = ($previous) ? ',' : '';
+								$sql .="$comma first_name ='$first_name'";
+								$previous = true;
+							}
+							if(isset($user_data['last_name'])){
+								$comma = ($previous) ? ',' : '';
+								$sql .="$comma last_name ='$last_name'";
+								$previous = true;
+							}
+							if(isset($user_data['mobile'])){
+								$comma = ($previous) ? ',' : '';
+								$sql .="$comma mobile ='$mobile'";
+								$previous = true;
+							}
+							$sql .= " where token='$token'";
+							$result = $this->executeGenericDMLQuery($sql);
+							if($result){
+								$this->sendResponse2(200,$this->messages['userUpdated']);
+							}
 				}
 				public function checkPassword(){
 					if(isset($this->_request['password']) && isset($this->_request['token'])){

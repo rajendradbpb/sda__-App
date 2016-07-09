@@ -174,6 +174,53 @@ app.controller("userController",function($scope,$state,$localStorage,userService
       console.log(">>>>>>>>>>>>>   ",err);
     })
   }
+  /*******************************************************/
+  /*************This is use for change password***********/
+  /*******************************************************/
+  $scope.changePassword = function(){
+    var obj = {
+      "token":localStorage.getItem('accessToken'),
+      "password":$scope.password.new
+    }
+    userService.changePassword(obj).then(function(pRes) {
+        if(pRes.status == 200)
+          Util.alertMessage('success', pRes.data.message);
+          $scope.password = {};
+      },function(err) {
+      console.log(">>>>>>>>>>>>>   ",err);
+    })
+  }
+  /*******************************************************/
+  /*************This is use for change password***********/
+  /*******************************************************/
+  $scope.getLogedInUser = function(){
+    userService.getUserDetails(localStorage.getItem('accessToken')).then(function(pRes) {
+        if(pRes.status == 200){
+          $scope.profile = pRes.data.data;
+        }
+      },function(err) {
+      console.log(">>>>>>>>>>>>>   ",err);
+    })
+  }
+  /*******************************************************/
+  /*************This is use for change password***********/
+  /*******************************************************/
+  $scope.updateMyProfile = function(){
+    var obj = {
+      'token': localStorage.getItem('accessToken'),
+      'first_name':$scope.profile.first_name,
+      'last_name':$scope.profile.first_name,
+      'email':$scope.profile.email,
+      'mobile':$scope.profile.mobile
+    }
+    userService.updateProfile(obj).then(function(pRes) {
+        if(pRes.status == 200){
+          Util.alertMessage('success', pRes.data.message);
+        }
+      },function(err) {
+      console.log(">>>>>>>>>>>>>   ",err);
+    })
+  }
 });
 app.controller("BuildingPlanController",function($scope,$rootScope,$state,$localStorage,userService){
   console.log($rootScope.user_type);

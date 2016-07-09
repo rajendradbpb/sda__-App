@@ -37,6 +37,19 @@ app.factory("userService", function ($http,CONFIG) {
       });
       return response;
     },
+    changePassword: function (data) {
+      console.log(data);
+      var _serializedData = $.param({"reqmethod": 'changePassword', "token":data.token,"password":data.password});
+      var response = $http({
+          method: 'POST',
+          url: CONFIG.HTTP_HOST,
+          data : _serializedData,
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+          }
+      });
+      return response;
+    },
     addUser: function (data) {
       console.log(data);
       var _serializedData = $.param({"reqmethod": 'register', "user_data":data});
@@ -58,8 +71,24 @@ app.factory("userService", function ($http,CONFIG) {
       var response = $http.get(CONFIG.HTTP_HOST+"/?reqmethod=getUserById&id="+id);
       return response;
     },
+    getUserDetails: function (token) {
+      var response = $http.get(CONFIG.HTTP_HOST+"/?reqmethod=getUserDetails&token="+token);
+      return response;
+    },
     manageUser: function (data,option) {
       var _serializedData = $.param({"reqmethod": 'user',"operation":option, "user_data":data});
+      var response = $http({
+          method: 'POST',
+          url: CONFIG.HTTP_HOST,
+          data : _serializedData,
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+          }
+      });
+      return response;
+    },
+    updateProfile: function (data) {
+      var _serializedData = $.param({"reqmethod": 'updateProfile',"user_data":data});
       var response = $http({
           method: 'POST',
           url: CONFIG.HTTP_HOST,
