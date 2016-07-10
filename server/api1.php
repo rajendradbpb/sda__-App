@@ -18,6 +18,8 @@ header('Access-Control-Allow-Origin: *');
 	  const DB = "rdadb";
 		// adding table names
 		const usersTable = "users";
+		const planTable = "buiding_plan";
+		const planUploadPath = "images/";
 
 
 
@@ -71,7 +73,8 @@ header('Access-Control-Allow-Origin: *');
 				"userUpdated" => "data updated successfully",
 				"loginSuccess" => "successfully Logedin",
 				"userLogout" => "Successfully log out",
-				"changedPassword" => "Successfully Changed your password"
+				"changedPassword" => "Successfully Changed your password",
+				"dataSaved" => "Data saved successfully"
 		);
 
 		public function __construct(){
@@ -401,7 +404,46 @@ header('Access-Control-Allow-Origin: *');
 						}
 					}
 				}
+				public function upload() {
+					$headers = apache_request_headers(); // to get all the headers
+					$accessToken = $headers['accessToken'];
+					// fetching the details of the plan
+					$name = $this->_request['name'];
+					$date = date("m/d/Y", strtotime($this->_request['date']));
+				  // $date = date("Y-m-d H:i:s",);//getdate($this->_request['date']);//date("Y-m-d",$this->_request['date']);//$this->_request['date']; //date('d-m-Y', $this->_request['date']);
+					$regdNo = $this->_request['regdNo'];
 
+					// getting the file information
+					$file_name = $_FILES['file']['name'];
+			    $file_size =$_FILES['file']['size'];
+			    $file_tmp =$_FILES['file']['tmp_name'];
+			    $file_type=$_FILES['file']['type'];
+			    $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+			    $extensions = array("jpeg","jpg","png");
+
+			    if(in_array($file_ext,$extensions )=== false){
+			     $errors[]="image extension not allowed, please choose a JPEG or PNG file.";
+			    }
+			    if($file_size > 2097152){
+			    $errors[]='File size cannot exceed 2 MB';
+				}
+			    if(empty($errors)==true){
+			        move_uploaded_file($file_tmp,self::planUploadPath.$file_name);
+							$filePath = self::planUploadPath.$file_name;
+
+							// getting the user id details from token
+							$sql = "select id from ".self::usersTable." where token = '$accessToken'";
+							$rows = $this->executeGenericDQLQuery($sql);
+							$userId = $rows[0]['id'];
+							// saving file and the building plan details in the database
+							$sql = "insert into ".self::planTable."(user,name,file_path,regdNo,date) values('$userId','$name','$filePath','$regdNo','$date')";
+							// echo $sql;
+							$rows = $this->executeGenericDMLQuery($sql);
+							$this->sendResponse2(200,$this->messages['dataSaved']);
+			    }else{
+			        print_r($errors);
+			    }
+				}
 				public function user() {
 						if(!isset($this->_request['operation']))
 							$this->sendResponse2(400,$this->messages['operationNotDefined']);

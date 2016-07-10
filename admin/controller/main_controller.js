@@ -222,6 +222,54 @@ app.controller("userController",function($scope,$state,$localStorage,userService
     })
   }
 });
-app.controller("BuildingPlanController",function($scope,$rootScope,$state,$localStorage,userService){
-  console.log($rootScope.user_type);
+app.controller("BuildingPlanController",function($scope,$rootScope,$state,$localStorage,userService,fileUpload){
+  $scope.buildingPlan = {};
+  $scope.uploadBuildingPlan = function(){
+     var file = $scope.myFile;
+
+     console.log('file is ' );
+     console.dir(file);
+
+     var uploadUrl = "http://localhost/external_projects/sdaAdmin/server/api1.php";
+     fileUpload.uploadFileToUrl(file, uploadUrl,$scope.buildingPlan);
+  };
+  /*
+  * adding codes for the date picker start
+  */
+  $scope.open2 = function() {
+   $scope.popup2.opened = true;
+  };
+  $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+  $scope.format = $scope.formats[0];
+  $scope.altInputFormats = ['M!/d!/yyyy'];
+  $scope.popup2 = {
+    opened: false
+  };
+
+
+
+  function getDayClass(data) {
+    var date = data.date,
+      mode = data.mode;
+    if (mode === 'day') {
+      var dayToCheck = new Date(date).setHours(0,0,0,0);
+
+      for (var i = 0; i < $scope.events.length; i++) {
+        var currentDay = new Date($scope.events[i].date).setHours(0,0,0,0);
+
+        if (dayToCheck === currentDay) {
+          return $scope.events[i].status;
+        }
+      }
+    }
+
+    return '';
+  }
+  /*
+  * adding codes for the date picker ends
+  */
+
+  $scope.open2 = function() {
+   $scope.popup2.opened = true;
+ };
 });
