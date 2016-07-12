@@ -19,7 +19,7 @@ header('Access-Control-Allow-Origin: *');
 		// adding table names
 		const usersTable = "users";
 		const planTable = "buiding_plan";
-		const planUploadPath = "images/";
+		const planUploadPath = "buildingPlan/";
 
 
 
@@ -409,7 +409,8 @@ header('Access-Control-Allow-Origin: *');
 					$accessToken = $headers['accessToken'];
 					// fetching the details of the plan
 					$name = $this->_request['name'];
-					$date = date("m/d/Y", strtotime($this->_request['date']));
+					$date = $this->_request['date'];
+					// $date = date("m/d/Y", strto	time($this->_request['date']));
 				  // $date = date("Y-m-d H:i:s",);//getdate($this->_request['date']);//date("Y-m-d",$this->_request['date']);//$this->_request['date']; //date('d-m-Y', $this->_request['date']);
 					$regdNo = $this->_request['regdNo'];
 
@@ -419,14 +420,15 @@ header('Access-Control-Allow-Origin: *');
 			    $file_tmp =$_FILES['file']['tmp_name'];
 			    $file_type=$_FILES['file']['type'];
 			    $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-			    $extensions = array("jpeg","jpg","png");
+			    $extensions = array("pdf");
 
 			    if(in_array($file_ext,$extensions )=== false){
-			     $errors[]="image extension not allowed, please choose a JPEG or PNG file.";
+			     $this->sendResponse(201,"Error","Its allow only pdf file");
 			    }
 			    if($file_size > 2097152){
-			    $errors[]='File size cannot exceed 2 MB';
-				}
+			    	// $errors[]='File size cannot exceed 2 MB';
+						$this->sendResponse(201,"Error","File size cannot exceed 2 MB");
+					}
 			    if(empty($errors)==true){
 			        move_uploaded_file($file_tmp,self::planUploadPath.$file_name);
 							$filePath = self::planUploadPath.$file_name;
@@ -439,7 +441,7 @@ header('Access-Control-Allow-Origin: *');
 							$sql = "insert into ".self::planTable."(user,name,file_path,regdNo,date) values('$userId','$name','$filePath','$regdNo','$date')";
 							// echo $sql;
 							$rows = $this->executeGenericDMLQuery($sql);
-							$this->sendResponse2(200,$this->messages['dataSaved']);
+							$this->sendResponse(200,"success",$this->messages['dataSaved']);
 			    }else{
 			        print_r($errors);
 			    }

@@ -109,15 +109,10 @@ app.directive('fileModel', ['$parse', function ($parse) {
        fd.append('regdNo', data.regdNo);
        fd.append('date', data.date);
 
-       $http.post(uploadUrl, fd, {
+       var response = $http.post(uploadUrl, fd, {
           transformRequest: angular.identity,
           headers: {'Content-Type': undefined , 'accessToken':localStorage.getItem('accessToken')}
-       })
-
-       .success(function(){
-       })
-
-       .error(function(){
        });
+       return response;
     }
  }]);

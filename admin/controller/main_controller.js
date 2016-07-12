@@ -222,16 +222,25 @@ app.controller("userController",function($scope,$state,$localStorage,userService
     })
   }
 });
-app.controller("BuildingPlanController",function($scope,$rootScope,$state,$localStorage,userService,fileUpload){
+app.controller("BuildingPlanController",function($scope,$rootScope,$state,$localStorage,userService,fileUpload,CONFIG,Util){
   $scope.buildingPlan = {};
   $scope.uploadBuildingPlan = function(){
      var file = $scope.myFile;
-
      console.log('file is ' );
      console.dir(file);
-
-     var uploadUrl = "http://localhost/external_projects/sdaAdmin/server/api1.php";
-     fileUpload.uploadFileToUrl(file, uploadUrl,$scope.buildingPlan);
+     console.log($scope.buildingPlan.date);
+     $scope.buildingPlan.date = moment($scope.buildingPlan.date).format("YYYY-MM-DD");
+     var uploadUrl = CONFIG.HTTP_HOST;
+     fileUpload.uploadFileToUrl(file, uploadUrl,$scope.buildingPlan).then(function(success){
+       console.log(success);
+       console.log(success.data.statusCode);
+       if(success.data.statusCode == 200){
+         Util.alertMessage('success', success.data.message);
+       }
+       else{
+         Util.alertMessage('danger', success.data.message);
+       }
+     })
   };
   /*
   * adding codes for the date picker start

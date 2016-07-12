@@ -46,6 +46,9 @@
         </div>
         <!-- /.box-body -->
         <div class="box-footer">
+          <section  align="center">
+              <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="close()">{{alert.msg}}</alert>
+          </section>
           <button type="submit" class="btn btn-default" ui-sref="buildingPlan">Back</button>
           <button type="submit" class="btn btn-info pull-right" ng-click="uploadBuildingPlan()">Submit</button>
         </div>
