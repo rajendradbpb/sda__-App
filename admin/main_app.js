@@ -99,20 +99,3 @@ app.directive('fileModel', ['$parse', function ($parse) {
        }
     };
  }]);
-
- app.service('fileUpload', ['$http', function ($http) {
-    this.uploadFileToUrl = function(file, uploadUrl,data){
-       var fd = new FormData();
-       fd.append('file', file);
-       fd.append('reqmethod', "upload");
-       fd.append('name', data.name);
-       fd.append('regdNo', data.regdNo);
-       fd.append('date', data.date);
-
-       var response = $http.post(uploadUrl, fd, {
-          transformRequest: angular.identity,
-          headers: {'Content-Type': undefined , 'accessToken':localStorage.getItem('accessToken')}
-       });
-       return response;
-    }
- }]);

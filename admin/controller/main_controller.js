@@ -222,8 +222,20 @@ app.controller("userController",function($scope,$state,$localStorage,userService
     })
   }
 });
-app.controller("BuildingPlanController",function($scope,$rootScope,$state,$localStorage,userService,fileUpload,CONFIG,Util){
+app.controller("BuildingPlanController",function($scope,$rootScope,$state,$localStorage,userService,buildingPlan,CONFIG,Util){
   $scope.buildingPlan = {};
+  /*******************************************************/
+  /*********This is use for load building list************/
+  /*******************************************************/
+  $scope.loadbuildingPlan = function(){
+    buildingPlan.getAllBuildingPlan().then(function(response){
+      console.log(response);
+      $scope.planList = response.data.data;
+    });
+  }
+  /*******************************************************/
+  /*********This is use for upload a building plan********/
+  /*******************************************************/
   $scope.uploadBuildingPlan = function(){
      var file = $scope.myFile;
      console.log('file is ' );
@@ -231,14 +243,12 @@ app.controller("BuildingPlanController",function($scope,$rootScope,$state,$local
      console.log($scope.buildingPlan.date);
      $scope.buildingPlan.date = moment($scope.buildingPlan.date).format("YYYY-MM-DD");
      var uploadUrl = CONFIG.HTTP_HOST;
-     fileUpload.uploadFileToUrl(file, uploadUrl,$scope.buildingPlan).then(function(success){
-       console.log(success);
-       console.log(success.data.statusCode);
-       if(success.data.statusCode == 200){
-         Util.alertMessage('success', success.data.message);
+     buildingPlan.addbuildingPlan(file, uploadUrl,$scope.buildingPlan).then(function(response){
+       if(response.data.statusCode == 200){
+         Util.alertMessage('success', response.data.message);
        }
        else{
-         Util.alertMessage('danger', success.data.message);
+         Util.alertMessage('danger', response.data.message);
        }
      })
   };

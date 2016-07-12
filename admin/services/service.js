@@ -101,3 +101,28 @@ app.factory("userService", function ($http,CONFIG) {
     }
   }
 });
+app.factory('buildingPlan', function ($http,CONFIG) {
+  return{
+   addbuildingPlan : function(file, uploadUrl,data){
+      var fd = new FormData();
+      fd.append('file', file);
+      fd.append('reqmethod', "upload");
+      fd.append('name', data.name);
+      fd.append('regdNo', data.regdNo);
+      fd.append('date', data.date);
+
+      var response = $http.post(uploadUrl, fd, {
+         transformRequest: angular.identity,
+         headers: {'Content-Type': undefined , 'accessToken':localStorage.getItem('accessToken')}
+      });
+      return response;
+   },
+   getAllBuildingPlan : function(){
+     console.log('121212121');
+     var response = $http.get(CONFIG.HTTP_HOST+"/?reqmethod=allBuildingPlan",{
+        headers: {'accessToken':localStorage.getItem('accessToken')}
+      });
+     return response;
+   }
+ }
+});
