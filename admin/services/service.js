@@ -123,6 +123,18 @@ app.factory('buildingPlan', function ($http,CONFIG) {
         headers: {'accessToken':localStorage.getItem('accessToken')}
       });
      return response;
+   },
+   updateAcceptance : function(obj){
+     var _serializedData = $.param({"reqmethod": 'updateAcceptance',"data":obj});
+     var response = $http({
+         method: 'POST',
+         url: CONFIG.HTTP_HOST,
+         data : _serializedData,
+         headers: {
+             'Content-Type': 'application/x-www-form-urlencoded'
+         }
+     });
+     return response;
    }
  }
 });

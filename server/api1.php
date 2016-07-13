@@ -312,26 +312,29 @@ header('Access-Control-Allow-Origin: *');
 						$rows = $this->executeGenericDQLQuery($sql);
 						if(sizeof($rows)){
 								$users = array();
-								for($i = 0; $i < sizeof($rows); $i++)
-								{
-									$users[$i]['id'] = $rows[$i]['id'];
-									$users[$i]['user_type'] = $rows[$i]['user_type'];
-									$users[$i]['user_name'] = $rows[$i]['user_name'];
-									$users[$i]['mobile'] = $rows[$i]['mobile'];
-									$users[$i]['email'] = $rows[$i]['email'];
-									$users[$i]['first_name'] = $rows[$i]['first_name'];
-									$users[$i]['last_name'] = $rows[$i]['last_name'];
-									$users[$i]['token'] = $rows[$i]['token'];
-									$users[$i]['status'] = $rows[$i]['status'];
+								if($rows[0]['status'] == '1'){
+									$users[0]['id'] = $rows[0]['id'];
+									$users[0]['user_type'] = $rows[0]['user_type'];
+									$users[0]['user_name'] = $rows[0]['user_name'];
+									$users[0]['mobile'] = $rows[0]['mobile'];
+									$users[0]['email'] = $rows[0]['email'];
+									$users[0]['first_name'] = $rows[0]['first_name'];
+									$users[0]['last_name'] = $rows[0]['last_name'];
+									$users[0]['token'] = $rows[0]['token'];
+									$users[0]['status'] = $rows[0]['status'];
+
+									$this->sendResponse(200,'success',$this->messages['loginSuccess'],$users);
 								}
-								$this->sendResponse2(200,$this->messages['loginSuccess'],$users);
+								else {
+									$this->sendResponse(202,"failed","You are not a active user contact to admin");
+								}
 						}
 						else {
 							$this->sendResponse(201,"failure","fail");
 						}
 					}
 					else{
-						$this->sendResponse(202,"failed","validation Error","Invalid user name or password");
+						$this->sendResponse(202,"validation Error","Invalid user name or password");
 					}
         }
 				public function logout(){
@@ -455,9 +458,12 @@ header('Access-Control-Allow-Origin: *');
 						$userId = $rows[0]['id'];
 						$usertype = $rows[0]['user_type'];
 					}
-					$sql = "SELECT * FROM ".self::planTable;
-					if($usertype && $usertype != 1)
-						$sql .= " where user=".$userId;
+					// SELECT  FROM buiding_plan INNER JOIN users ON buiding_plan.user = users.id WHERE buiding_plan.user = 29
+					$sql = "SELECT buiding_plan.id, buiding_plan.user, buiding_plan.name, buiding_plan.regdNo, buiding_plan.file_path, buiding_plan.status, buiding_plan.remark, buiding_plan.date, buiding_plan.asset_name, users.first_name, users.last_name FROM ".self::planTable." INNER JOIN users ON buiding_plan.user = users.id";
+					if($usertype && $usertype == 3)
+						$sql .= " where buiding_plan.user=".$userId;
+					if($usertype && $usertype == 2)
+						$sql .= " where buiding_plan.status='pending'";
 					$rows = $this->executeGenericDQLQuery($sql);
 					$plan = array();
 					for($i = 0; $i < sizeof($rows); $i++) {
@@ -470,8 +476,22 @@ header('Access-Control-Allow-Origin: *');
 						$plan[$i]['remark'] = $rows[$i]['remark'];
 						$plan[$i]['date'] = $rows[$i]['date'];
 						$plan[$i]['asset_name'] = $rows[$i]['asset_name'];
+						$user['first_name'] = $rows[$i]['first_name'];
+						$user['last_name'] = $rows[$i]['last_name'];
+						$plan[$i]['users'] = $user;
 					}
 					$this->sendResponse2(200,$this->messages['dataFetched'],$plan);
+				}
+				public function updateAcceptance() {
+					$plan_data = isset($this->_request['data']) ? $this->_request['data'] : $this->_request;
+					$plan_id = $plan_data['id'];
+					$plan_status = $plan_data['status'];
+					$plan_remark = $plan_data['remark'];
+					$sql = "update ".self::planTable." set status = '$plan_status', remark = '$plan_remark' where id=".$plan_id;
+					$result = $this->executeGenericDMLQuery($sql);
+					if($result){
+						$this->sendResponse2(200,$this->messages['userUpdated']);
+					}
 				}
 				public function user() {
 						if(!isset($this->_request['operation']))

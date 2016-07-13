@@ -24,6 +24,9 @@
               <button ng-click="signIn(user)" class="btn btn-primary btn-block btn-flat">
                 Sign In
               </button>
+              <section  align="center m-t-sm">
+                  <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="close()">{{alert.msg}}</alert>
+              </section>
             </div>
           </div>
         </form>

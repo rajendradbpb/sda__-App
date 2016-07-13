@@ -21,6 +21,7 @@
                 <th>Last Name</th>
                 <th>Email</th>
                 <th>Mobile</th>
+                <th>User Role</th>
                 <th>Status</th>
                 <th>Options</th>
               </tr>
@@ -32,6 +33,8 @@
                 <td>{{user.last_name}}</td>
                 <td>{{user.email}}</td>
                 <td>{{user.mobile}}</td>
+                <td ng-if="user.user_type == '3'">Enterer</td>
+                <td ng-if="user.user_type == '2'">Verifier</td>
                 <td>
                   <span ng-if="user.status == '1'" class="label label-success">Active</span>
                   <span class="label label-danger" ng-if="user.status == '0'">Inactive</span>

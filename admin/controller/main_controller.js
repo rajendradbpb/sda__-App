@@ -2,11 +2,18 @@ app.controller("Main_Controller",function($scope,$rootScope,$state,$localStorage
   /*******************************************************/
   /*************This is use for check user login**********/
   /*******************************************************/
+
   $scope.getUseDetails = function(){
     if(localStorage.getItem('accessToken')){
       $scope.is_loggedin = true;
       $rootScope.user_type = localStorage.getItem('userType');
-      console.log($rootScope.user_type);
+      userService.getUserDetails(localStorage.getItem('accessToken')).then(function(pRes) {
+          if(pRes.status == 200){
+            $scope.profile = pRes.data.data;
+          }
+        },function(err) {
+        console.log(">>>>>>>>>>>>>   ",err);
+      })
     }
     else{
       $scope.is_loggedin = false;
@@ -17,13 +24,17 @@ app.controller("Main_Controller",function($scope,$rootScope,$state,$localStorage
   /*******************************************************/
   $scope.signIn = function(user){
     userService.login(user).then(function(pRes) {
-      if(pRes.status == 200){
+      if(pRes.data.statusCode == 200){
         $scope.is_loggedin = true;
         $rootScope.user_type = pRes.data.data[0].user_type;
         console.log(pRes.data.data[0]);
         localStorage.setItem('accessToken',pRes.data.data[0].token);
         localStorage.setItem('userType',pRes.data.data[0].user_type);
+        $scope.getUseDetails();
         $state.go("dashboard");
+      }
+      else{
+          Util.alertMessage('danger', pRes.data.message);
       }
     },
     function(err) {
@@ -194,13 +205,7 @@ app.controller("userController",function($scope,$state,$localStorage,userService
   /*************This is use for change password***********/
   /*******************************************************/
   $scope.getLogedInUser = function(){
-    userService.getUserDetails(localStorage.getItem('accessToken')).then(function(pRes) {
-        if(pRes.status == 200){
-          $scope.profile = pRes.data.data;
-        }
-      },function(err) {
-      console.log(">>>>>>>>>>>>>   ",err);
-    })
+
   }
   /*******************************************************/
   /*************This is use for change password***********/
@@ -209,7 +214,7 @@ app.controller("userController",function($scope,$state,$localStorage,userService
     var obj = {
       'token': localStorage.getItem('accessToken'),
       'first_name':$scope.profile.first_name,
-      'last_name':$scope.profile.first_name,
+      'last_name':$scope.profile.last_name,
       'email':$scope.profile.email,
       'mobile':$scope.profile.mobile
     }
@@ -231,6 +236,22 @@ app.controller("BuildingPlanController",function($scope,$rootScope,$state,$local
     buildingPlan.getAllBuildingPlan().then(function(response){
       console.log(response);
       $scope.planList = response.data.data;
+    });
+  }
+  /*******************************************************/
+  /*********This is use for load building list************/
+  /*******************************************************/
+  $scope.planAcceptance = function(remark,status,id){
+    console.log(remark);
+    console.log(status);
+    console.log(id);
+    var obj = {
+      "id":id,
+      "status":status,
+      "remark":remark
+    }
+    buildingPlan.updateAcceptance(obj).then(function(response){
+      console.log(response);
     });
   }
   /*******************************************************/

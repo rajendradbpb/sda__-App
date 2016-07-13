@@ -22,6 +22,7 @@
                 <th>Date</th>
                 <th>Document</th>
                 <th>Status</th>
+                <th ng-if="user_type != '3'">Upload By</th>
                 <th ng-if="user_type == '2'">Remarks</th>
               </tr>
             </thead>
@@ -34,11 +35,12 @@
                 <td><a href="../server/{{plan.filepath}}" target="_blank">View</a></td>
                 <td>
                   <span ng-if="user_type != '2'">{{plan.status}}</span>
-                  <a href="" ng-if="user_type == '2'"><span class="label label-success">Accepts</span></a>
-                  <a href="" ng-if="user_type == '2'"><span class="label label-danger">Reject</span></a>
+                  <button ng-if="user_type == '2'" class="label label-success" ng-click="planAcceptance(plan.remark,'approved',plan.id)">Accepts</button>
+                  <button ng-if="user_type == '2'" ng-disabled="plan.remark == null || plan.remark == ''" class="label label-danger" ng-click="planAcceptance(plan.remark,'rejected',plan.id)">Reject</button>
                 </td>
+                <td ng-if="user_type != '3'">{{plan.users.first_name+' '+plan.users.last_name}}</td>
                 <td ng-if="user_type == '2'">
-                  <input type="text"  class="form-control" name="first_name" placeholder="Remarks">
+                  <input type="text"  class="form-control" name="remarks" ng-model="plan.remark" placeholder="Remarks">
                 </td>
               </tr>
           </table>
